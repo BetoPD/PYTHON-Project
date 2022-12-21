@@ -9,11 +9,10 @@ def counter_down(seconds):
     for i in range(seconds):
         time.sleep(1) 
         print('You have ' + str(10 - i) + ' seconds to change player!!')
-def counter_to_shoot(seconds):
-    for i in range(seconds):
+def counter_to_shoot():
+    for i in range(3):
         time.sleep(1)
-        print('Launching Misile, in {seconds}!!'.format(seconds = i))
-
+        print('Misile launching in ' + str(3 - i) + ' seconds!!')
 class BattleShip:
 
     def __init__(self, score = 0, turn = False, kills = 0, last_hit = False, player_id = ''):
@@ -168,101 +167,73 @@ while menu1:
         print('Let\'s start war!!!')
         print('Let\'s decide who goes first')
         turn = random.randint(1, 2)
+        turn_player1 = False
+        turn_player2 = False
         if turn == 1:
             print([player1.player_id + ' goes first!!'])
+            turn_player1 = True
         else:
             print([player2.player_id + ' goes first!!'])
+            turn_player2 = True
         while player1.score < 27 and player2.score < 27:
-            if turn == 1:
+            while turn_player1 == True and turn_player2 == False:
                 print(player1.player_id)
                 print('Here it is the map!!')
                 player1.print_game_visualization()
                 print('Let\'s set a target!!')
                 print('Give me the coordinates to take a shot!!')
-                x_coordinate = player2.letters_to_numbers[input('Give me a Letter\nA -- Z\nAnswer: ')] - 1
-                y_coordinate = int(input('Give me a Numnber\n1 -- 10\nAnswer: ')) - 1
-                if player2.game[y_coordinate][x_coordinate] == ' ':
-                    counter_to_shoot(5)
+                x_coordinate = player1.letters_to_numbers[input('Give me a Letter\nA -- Z\nAnswer: ').upper()] - 1
+                y_coordinate = int(input('Give me a Number\n1 -- 10\nAnswer: ')) - 1
+                if player2.game[y_coordinate][x_coordinate] == " ":
+                    counter_to_shoot()
                     print('We failed that shoot!!')
                     print('Good luck next time!!')
-                    player1.game_visualization[y_coordinate][x_coordinate] = 'X'
-                elif player2.game[y_coordinate][x_coordinate] == 'X':
-                    print('You already tooke a shot to that spot!!!')
+                    player1.game_visualization[y_coordinate][x_coordinate] = 'O'
+                    player2.game[y_coordinate][x_coordinate] = 'O'
+                    turn_player1 = False
+                    turn_player2 = True
+                elif player2.game[y_coordinate][x_coordinate] == 'X' or player2.game[y_coordinate][x_coordinate] == 'O':
+                    print('You already took a shot to that spot!!')
                 else:
-                    player2.game[y_coordinate][x_coordinate] == 'X'
-                    counter_to_shoot(5)
-                    print('Nice shoot!!')
+                    player2.game[y_coordinate][x_coordinate] = 'X'
+                    player1.game_visualization[y_coordinate][x_coordinate] = 'X'
+                    counter_to_shoot()
+                    print('Nice shot!!')
                     print('We hitted a target!!')
                     player1.score += 1
                     clear_screen()
                     counter_down(10)
-                    print(player2.player_id)
-                    print('Here it is the map!!')
-                    player2.print_game_visualization()
-                    print('Let\'s set a target!!')
-                    print('Give me the coordinates to take a shot!!')
-                    x_coordinate = player1.letters_to_numbers[input('Give me a Letter\nA -- Z\nAnswer: ')] - 1
-                    y_coordinate = int(input('Give me a Numnber\n1 -- 10\nAnswer: ')) - 1
-                    if player1.game[y_coordinate][x_coordinate] == ' ':
-                        counter_to_shoot(5)
-                        print('We failed that shoot!!')
-                        print('Good luck next time!!')
-                        player1.game_visualization[y_coordinate][x_coordinate] = 'X'
-                    elif player1.game[y_coordinate][x_coordinate] == 'X':
-                        print('You already tooke a shot to that spot!!!')
-                    else:
-                        player1.game[y_coordinate][x_coordinate] == 'X'
-                        counter_to_shoot(5)
-                        print('Nice shoot!!')
-                        print('We hitted a target!!')
-                        player2.score += 1
-                clear_screen()
-                counter_down(10)
-            else: 
+                    turn_player1 = False
+                    turn_player2 = True
+            while turn_player1 == False and turn_player2 == True:
                 print(player2.player_id)
                 print('Here it is the map!!')
                 player2.print_game_visualization()
                 print('Let\'s set a target!!')
                 print('Give me the coordinates to take a shot!!')
-                x_coordinate = player1.letters_to_numbers[input('Give me a Letter\nA -- Z\nAnswer: ')] - 1
-                y_coordinate = int(input('Give me a Numnber\n1 -- 10\nAnswer: ')) - 1
-                if player1.game[y_coordinate][x_coordinate] == ' ':
-                    counter_to_shoot(5)
+                x_coordinate = player2.letters_to_numbers[input('Give me a Letter\nA -- Z\nAnswer: ').upper()] - 1
+                y_coordinate = int(input('Give me a Number\n1 -- 10\nAnswer: ')) - 1
+                if player1.game[y_coordinate][x_coordinate] == " ":
+                    counter_to_shoot()
                     print('We failed that shoot!!')
                     print('Good luck next time!!')
-                    player1.game_visualization[y_coordinate][x_coordinate] = 'X'
-                elif player1.game[y_coordinate][x_coordinate] == 'X':
-                    print('You already tooke a shot to that spot!!!')
+                    player2.game_visualization[y_coordinate][x_coordinate] = 'O'
+                    player1.game[y_coordinate][x_coordinate] = 'O'
+                    turn_player2 = False
+                    turn_player1 = True
+                elif player1.game[y_coordinate][x_coordinate] == 'X' or player1.game[y_coordinate][x_coordinate] == 'O':
+                    print('You already took a shot to that spot!!')
                 else:
-                    player1.game[y_coordinate][x_coordinate] == 'X'
-                    counter_to_shoot(5)
-                    print('Nice shoot!!')
+                    player1.game[y_coordinate][x_coordinate] = 'X'
+                    player2.game_visualization[y_coordinate][x_coordinate] = 'X'
+                    counter_to_shoot()
+                    print('Nice shot!!')
                     print('We hitted a target!!')
                     player2.score += 1
-                clear_screen()
-                counter_down(10)
-                print(player1.player_id)
-                print('Here it is the map!!')
-                player1.print_game_visualization()
-                print('Let\'s set a target!!')
-                print('Give me the coordinates to take a shot!!')
-                x_coordinate = player2.letters_to_numbers[input('Give me a Letter\nA -- Z\nAnswer: ')] - 1
-                y_coordinate = int(input('Give me a Numnber\n1 -- 10\nAnswer: ')) - 1
-                if player2.game[y_coordinate][x_coordinate] == ' ':
-                    counter_to_shoot(5)
-                    print('We failed that shoot!!')
-                    print('Good luck next time!!')
-                    player1.game_visualization[y_coordinate][x_coordinate] = 'X'
-                elif player2.game[y_coordinate][x_coordinate] == 'X':
-                    print('You already tooke a shot to that spot!!!')
-                else:
-                    player2.game[y_coordinate][x_coordinate] == 'X'
-                    counter_to_shoot(5)
-                    print('Nice shoot!!')
-                    print('We hitted a target!!')
-                    player1.score += 1
-                clear_screen()
-                counter_down(10)
+                    clear_screen()
+                    counter_down(10)
+                    turn_player2 = False
+                    turn_player1 = True
     elif option_menu == 2:
         print('Somenthing 2.....')
     else:
