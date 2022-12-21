@@ -15,11 +15,8 @@ def counter_to_shoot():
         print('Misile launching in ' + str(3 - i) + ' seconds!!')
 class BattleShip:
 
-    def __init__(self, score = 0, turn = False, kills = 0, last_hit = False, player_id = ''):
+    def __init__(self, score = 0, player_id = ''):
         self.score = score
-        self.turn = turn 
-        self.kills = kills
-        self.last_hit = last_hit
         self.player_id = player_id
         self.game = []
         self.game_visualization = []
@@ -154,7 +151,7 @@ for i in range(10):
 menu1 = True
 
 while menu1:
-    print('\nMain Menu\n\nPress\n\n1) Multiplayer Game\n2) Single Player\n3) Exit')
+    print('\nMain Menu\n\nPress\n\n1) Multiplayer Game\n2) Instructions\n3) Exit')
     option_menu = int(input('Answer: '))
     clear_screen()
     if option_menu == 1:
@@ -234,7 +231,20 @@ while menu1:
                     counter_down(10)
                     turn_player2 = False
                     turn_player1 = True
+        if player1.score >= 27:
+            print(player1.player_id + " wins!!")
+            menu1 = False
+        else:
+            print(player2.player_id + " wins!!")
+            menu1 = False
     elif option_menu == 2:
-        print('Somenthing 2.....')
+        print("""
+        The object of Battleship is to try and sink all of the other player's before they sink all of your ships. 
+        All of the other player's ships are somewhere on his/her board.  You try and hit them by calling out the coordinates of one of the squares on the board.  
+        The other player also tries to hit your ships by calling out coordinates.  Neither you nor the other player can see the other's board so you must try to guess where they are.  
+        Each board in the physical game has two grids:  the lower (horizontal) section for the player's ships and the upper part (vertical during play) for recording the player's guesses.
+        """)
+        print()
+        clear_screen()
     else:
         menu1 = False
