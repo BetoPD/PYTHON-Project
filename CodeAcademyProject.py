@@ -1,23 +1,34 @@
 import sys, subprocess
 import random
+import time
 
 def clear_screen():
     input('Press Enter to continues...')
     subprocess.run('clear', shell=True)
+def counter_down(seconds):
+    for i in range(seconds):
+        time.sleep(1) 
+        print('You have ' + str(10 - i) + ' seconds to change player!!')
+def counter_to_shoot(seconds):
+    for i in range(seconds):
+        time.sleep(1)
+        print('Launching Misile, in {seconds}!!'.format(seconds = i))
 
 class BattleShip:
 
-    game = []
-    letters_to_numbers = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9, 'J': 10}
-    number_of_ships = 6
-    added_ships = {6: True, 5: True, 4: True, 3: True}
-    option_to_numbers = {1: 6, 2: 5, 3: 4, 4: 3}
-
-    def __init__(self, score = 0, turn = False, kills = 0, last_hit = False):
+    def __init__(self, score = 0, turn = False, kills = 0, last_hit = False, player_id = ''):
         self.score = score
         self.turn = turn 
         self.kills = kills
         self.last_hit = last_hit
+        self.player_id = player_id
+        self.game = []
+        self.game_visualization = []
+        self.letters_to_numbers = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9, 'J': 10}
+        self.number_of_ships = 6
+        self.added_ships = {6: True, 5: True, 4: True, 3: True}
+        self.option_to_numbers = {1: 6, 2: 5, 3: 4, 4: 3}
+        self.ship_figures = {6: '#', 5: '*', 4: '@', 3: '%'}
     
     def print_game(self):
         keys = list(self.letters_to_numbers.keys())
@@ -25,14 +36,26 @@ class BattleShip:
         for i in range(10):
                 print(str(i + 1) + str(self.game[i]) + '\n')
 
+    def print_game_visualization(self):
+        keys = list(self.letters_to_numbers.keys())
+        print(' ' + str(keys))   
+        for i in range(10):
+                print(str(i + 1) + str(self.game_visualization[i]) + '\n')
+
     def add_ships(self):
         completed = False
         counter_ship5 = 0
         counter_ship4 = 0
+        print('{player_name} it\'s your turn!!\n'.format(player_name = self.player_id))
         while not completed:
+            if counter_ship5 > 1 and ship_id == 5:
+                self.added_ships[ship_id] = False
+            if counter_ship4 > 1 and ship_id == 4:
+                self.added_ships[ship_id] = False
+            verification = True
             used_ships = True
             while used_ships:
-                print('Pick a Ship!!')
+                print('Pick a Ship!!\n')
                 print('1) 6 Square Ship\nAvailability: ' + str(self.added_ships[6]) + '\n2) 5 Square Ship x 2\nAvailability: ' + str(self.added_ships[5]) + '\n3) 4 Square Ship x 2\nAvailability: ' + str(self.added_ships[4]) + '\n4) 3 Square Ship\nAvailability: ' + str(self.added_ships[3]))
                 option_ships = int(input('Answer: '))
                 ship_id = self.option_to_numbers[option_ships]
@@ -50,68 +73,63 @@ class BattleShip:
             i = 0
             if horizontal_or_vertical == 1:
                 print('In what number you whant your ship??')
-                print('1 - 10')
+                print('1 -- 10')
                 y_position = int(input('Answer: ')) - 1
                 print('Initial letter of the ship??')
+                print('A -- J')
                 x_initial_position = self.letters_to_numbers[input('Answer: ').upper()] - 1
                 try:
                     for i in range(ship_id):
                         if self.game[y_position][x_initial_position + i] == " ":
-                            self.game[y_position][x_initial_position + i] = '#'
+                            self.game[y_position][x_initial_position + i] = self.ship_figures[ship_id]
                         else:
-                            for z in range(x_initial_position + i - 1, x_initial_position, -1):
+                            for z in range(x_initial_position + i - 1, x_initial_position, - 1):
                                 self.game[y_position][z] = " "
                             print('There is another ship in that position!!!!')
                             print('Try again!!!')
+                            verification = False
                             clear_screen()
                             break
-                    if ship_id != 4 and ship_id != 5:
-                        self.added_ships[ship_id] = False
-                    elif ship_id == 4:
-                        if counter_ship4 >= 1:
+                    if verification == True:
+                        if ship_id != 4 and ship_id != 5:
                             self.added_ships[ship_id] = False
-                        else:
+                        elif ship_id == 4:
                             counter_ship4 += 1
-                    elif ship_id == 5:
-                        if counter_ship5 >= 1:
-                            self.added_ships[ship_id] = False
-                        else:
+                        elif ship_id == 5:
                             counter_ship5 += 1
-                    clear_screen()
+                        clear_screen()
                 except IndexError:
                     print('Ship was too large, try again with other position')
                     for z in range(x_initial_position + i - 1, x_initial_position - 1, -1):
                         self.game[y_position][z] = " "
                     clear_screen()
             elif horizontal_or_vertical == 2:
-                print('In what letter you want your ship??')
-                x_position = self.letters_to_numbers[input('Answer: ').upper()] - 1
-                print('Initial position of the ship??')
+                print('In what number you whant your ship??')
+                print('1 -- 10')
                 y_initial_position = int(input('Answer: ')) - 1
+                print('Initial letter of the ship??')
+                print('A -- J')
+                x_position = self.letters_to_numbers[input('Answer: ').upper()] - 1
                 try:
                     for i in range(ship_id):
                         if self.game[y_initial_position + i][x_position] == " ":
-                            self.game[y_initial_position + i][x_position] = "#"
+                            self.game[y_initial_position + i][x_position] = self.ship_figures[ship_id]
                         else:
                             for z in range(y_initial_position + i - 1, y_initial_position - 1, -1):
                                 self.game[z][x_position] = " "
                             print('There is another ship in that position!!!!')
                             print('Try again!!!')
+                            verification = False
                             clear_screen()
                             break
-                    if ship_id != 4 and ship_id != 5:
-                        self.added_ships[ship_id] = False
-                    elif ship_id == 4:
-                        if counter_ship4 > 1:
+                    if verification == True:
+                        if ship_id != 4 and ship_id != 5:
                             self.added_ships[ship_id] = False
-                        else:
+                        elif ship_id == 4:
                             counter_ship4 += 1
-                    elif ship_id == 5:
-                        if counter_ship5 > 1:
-                            self.added_ships[ship_id] = False
-                        else:
+                        elif ship_id == 5:
                             counter_ship5 += 1
-                    clear_screen()
+                        clear_screen()
                 except IndexError:
                     print('Ship was too large, try again with other position')
                     for z in range(y_initial_position + i - 1, y_initial_position - 1, -1):
@@ -125,35 +143,127 @@ class BattleShip:
 
 player1 = BattleShip()
 player2 = BattleShip()
+player1.player_id = 'PLAYER 1'
+player2.player_id = 'PLAYER 2'
 
 for i in range(10):
     player1.game.append([" ", " ", " ", " ", " ", " ", " ", " ", " ", " "])
+    player1.game_visualization.append([" ", " ", " ", " ", " ", " ", " ", " ", " ", " "])
     player2.game.append([" ", " ", " ", " ", " ", " ", " ", " ", " ", " "])
+    player2.game_visualization.append([" ", " ", " ", " ", " ", " ", " ", " ", " ", " "])
 
 menu1 = True
 
 while menu1:
-    print('Main Menu\n\nPress\n\n1) Start Game\n2) More About\n3) Exit')
-
+    print('\nMain Menu\n\nPress\n\n1) Multiplayer Game\n2) Single Player\n3) Exit')
     option_menu = int(input('Answer: '))
-
+    clear_screen()
     if option_menu == 1:
-            clear_screen()
-            keys = list(BattleShip.letters_to_numbers.keys())
-            print(' ' + str(keys))              
-            for i in range(10):
-                print(str(i + 1) + str(BattleShip.game[1]) + '\n')
-            print('Now, it\'s time to add some ships to the battlefield!!')
-            print()
-            print('First, Player 1!!')
-            player1.add_ships()
-            player1.print_game()
-            print('Now Player2!!')
-            player2.add_ships()
-            player2.print_game()
-    elif option_menu == 2:
+        print('Your are playing in 2 Player Mode!!')
+        print('Now, it\'s time to add some ships to the battlefield!!')
         clear_screen()
+        player1.add_ships()
+        counter_down(10)
+        player2.add_ships()
+        print('Let\'s start war!!!')
+        print('Let\'s decide who goes first')
+        turn = random.randint(1, 2)
+        if turn == 1:
+            print([player1.player_id + ' goes first!!'])
+        else:
+            print([player2.player_id + ' goes first!!'])
+        while player1.score < 27 and player2.score < 27:
+            if turn == 1:
+                print(player1.player_id)
+                print('Here it is the map!!')
+                player1.print_game_visualization()
+                print('Let\'s set a target!!')
+                print('Give me the coordinates to take a shot!!')
+                x_coordinate = player2.letters_to_numbers[input('Give me a Letter\nA -- Z\nAnswer: ')] - 1
+                y_coordinate = int(input('Give me a Numnber\n1 -- 10\nAnswer: ')) - 1
+                if player2.game[y_coordinate][x_coordinate] == ' ':
+                    counter_to_shoot(5)
+                    print('We failed that shoot!!')
+                    print('Good luck next time!!')
+                    player1.game_visualization[y_coordinate][x_coordinate] = 'X'
+                elif player2.game[y_coordinate][x_coordinate] == 'X':
+                    print('You already tooke a shot to that spot!!!')
+                else:
+                    player2.game[y_coordinate][x_coordinate] == 'X'
+                    counter_to_shoot(5)
+                    print('Nice shoot!!')
+                    print('We hitted a target!!')
+                    player1.score += 1
+                    clear_screen()
+                    counter_down(10)
+                    print(player2.player_id)
+                    print('Here it is the map!!')
+                    player2.print_game_visualization()
+                    print('Let\'s set a target!!')
+                    print('Give me the coordinates to take a shot!!')
+                    x_coordinate = player1.letters_to_numbers[input('Give me a Letter\nA -- Z\nAnswer: ')] - 1
+                    y_coordinate = int(input('Give me a Numnber\n1 -- 10\nAnswer: ')) - 1
+                    if player1.game[y_coordinate][x_coordinate] == ' ':
+                        counter_to_shoot(5)
+                        print('We failed that shoot!!')
+                        print('Good luck next time!!')
+                        player1.game_visualization[y_coordinate][x_coordinate] = 'X'
+                    elif player1.game[y_coordinate][x_coordinate] == 'X':
+                        print('You already tooke a shot to that spot!!!')
+                    else:
+                        player1.game[y_coordinate][x_coordinate] == 'X'
+                        counter_to_shoot(5)
+                        print('Nice shoot!!')
+                        print('We hitted a target!!')
+                        player2.score += 1
+                clear_screen()
+                counter_down(10)
+            else: 
+                print(player2.player_id)
+                print('Here it is the map!!')
+                player2.print_game_visualization()
+                print('Let\'s set a target!!')
+                print('Give me the coordinates to take a shot!!')
+                x_coordinate = player1.letters_to_numbers[input('Give me a Letter\nA -- Z\nAnswer: ')] - 1
+                y_coordinate = int(input('Give me a Numnber\n1 -- 10\nAnswer: ')) - 1
+                if player1.game[y_coordinate][x_coordinate] == ' ':
+                    counter_to_shoot(5)
+                    print('We failed that shoot!!')
+                    print('Good luck next time!!')
+                    player1.game_visualization[y_coordinate][x_coordinate] = 'X'
+                elif player1.game[y_coordinate][x_coordinate] == 'X':
+                    print('You already tooke a shot to that spot!!!')
+                else:
+                    player1.game[y_coordinate][x_coordinate] == 'X'
+                    counter_to_shoot(5)
+                    print('Nice shoot!!')
+                    print('We hitted a target!!')
+                    player2.score += 1
+                clear_screen()
+                counter_down(10)
+                print(player1.player_id)
+                print('Here it is the map!!')
+                player1.print_game_visualization()
+                print('Let\'s set a target!!')
+                print('Give me the coordinates to take a shot!!')
+                x_coordinate = player2.letters_to_numbers[input('Give me a Letter\nA -- Z\nAnswer: ')] - 1
+                y_coordinate = int(input('Give me a Numnber\n1 -- 10\nAnswer: ')) - 1
+                if player2.game[y_coordinate][x_coordinate] == ' ':
+                    counter_to_shoot(5)
+                    print('We failed that shoot!!')
+                    print('Good luck next time!!')
+                    player1.game_visualization[y_coordinate][x_coordinate] = 'X'
+                elif player2.game[y_coordinate][x_coordinate] == 'X':
+                    print('You already tooke a shot to that spot!!!')
+                else:
+                    player2.game[y_coordinate][x_coordinate] == 'X'
+                    counter_to_shoot(5)
+                    print('Nice shoot!!')
+                    print('We hitted a target!!')
+                    player1.score += 1
+                clear_screen()
+                counter_down(10)
+    elif option_menu == 2:
         print('Somenthing 2.....')
-
     else:
         menu1 = False
